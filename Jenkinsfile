@@ -1,7 +1,5 @@
 pipeline {
-    agent {
-      label "jenkins-maven"
-    }
+    agent none
     environment {
       ORG               = 'zefiber25'
       APP_NAME          = 'ze1'
@@ -19,15 +17,4 @@ pipeline {
 	    }
       }
       
-    post {
-        always {
-            cleanWs()
-        }
-        failure {
-            input """Pipeline failed. 
-We will keep the build pod around to help you diagnose any failures. 
-
-Select Proceed or Abort to terminate the build pod"""
-        }
-    }
   }
