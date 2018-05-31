@@ -12,13 +12,13 @@ pipeline {
 				}
 			  }
 			  steps {
-				sh 'mvn clean install -Drevision=${BUILD_NUMBER}'
+				sh 'mvn clean install -Drevision=0.0.${BUILD_NUMBER}'
 			  }
 		  }
 		  stage('Docker Build') {
 			  agent any
 			  steps {
-				sh 'docker build -t zefiber/ze1:${BUILD_NUMBER} .'
+				sh 'docker build -t zefiber/ze1:0.0.${BUILD_NUMBER} .'
 			  }
 		  }
 		  stage('Docker Push') {
@@ -26,7 +26,7 @@ pipeline {
 			  steps {
 				withCredentials([usernamePassword(credentialsId: 'dockerHub', passwordVariable: 'dockerHubPassword', usernameVariable: 'dockerHubUser')]) {
 				  sh "docker login -u ${env.dockerHubUser} -p ${env.dockerHubPassword}"
-				  sh 'docker push zefiber/ze1:${BUILD_NUMBER}'
+				  sh 'docker push zefiber/ze1:0.0.${BUILD_NUMBER}'
 				}
 			  }
           }
