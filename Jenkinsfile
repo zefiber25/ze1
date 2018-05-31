@@ -13,7 +13,7 @@ pipeline {
 			  }
 			  steps {
 			    sh 'mvn --batch-mode release:update-versions'
-				sh "export version=\$(mvn help:evaluate -Dexpression=project.version | grep -e '^[^\[]')"
+				sh "export version=\$(mvn help:evaluate -Dexpression=project.version | grep -e '^[^\\[]')"
 				sh 'mvn clean install'
 			  }
 		  }
