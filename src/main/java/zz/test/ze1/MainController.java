@@ -15,7 +15,7 @@ public class MainController
   @Autowired
   private UserService userService;
 
-  @RequestMapping(value = "/getAll", method = RequestMethod.GET)
+  @RequestMapping(value = "/", method = RequestMethod.GET)
   public String index()
   {
     return userService.getSignature();
