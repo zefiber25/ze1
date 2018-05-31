@@ -12,15 +12,13 @@ pipeline {
 				}
 			  }
 			  steps {
-			    sh 'mvn --batch-mode release:update-versions'
-				sh "env.version=\$(mvn help:evaluate -Dexpression=project.version | grep -e '^[^\\[]')"
-				sh 'mvn clean install'
+				sh 'mvn clean install -Drevision=${BUILD_NUMBER}'
 			  }
 		  }
 		  stage('Docker Build') {
 			  agent any
 			  steps {
-				sh 'docker build -t zefiber/ze1:${env.version} .'
+				sh 'docker build -t zefiber/ze1:${BUILD_NUMBER} .'
 			  }
 		  }
 		  stage('Docker Push') {
@@ -28,7 +26,7 @@ pipeline {
 			  steps {
 				withCredentials([usernamePassword(credentialsId: 'dockerHub', passwordVariable: 'dockerHubPassword', usernameVariable: 'dockerHubUser')]) {
 				  sh "docker login -u ${env.dockerHubUser} -p ${env.dockerHubPassword}"
-				  sh 'docker push zefiber/ze1:${env.version}'
+				  sh 'docker push zefiber/ze1:${BUILD_NUMBER}'
 				}
 			  }
           }
