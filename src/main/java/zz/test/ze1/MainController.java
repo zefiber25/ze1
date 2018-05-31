@@ -21,4 +21,10 @@ public class MainController
     return userService.getSignature();
   }
 
+  @RequestMapping(value = "/getAll", method = RequestMethod.GET)
+  public String getAll()
+  {
+    return "this is All!";
+  }
+
 }
