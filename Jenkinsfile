@@ -31,6 +31,7 @@ pipeline {
 			  }
           }
 		  stage('K8s Deploy') {
+		      agent any
 		      steps {
 				sh "kubectl --namespace=jx delete deployment ze1-deployment"
 				sh "kubectl --namespace=jx delete service ze1-service"
