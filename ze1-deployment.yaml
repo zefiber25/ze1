@@ -1,0 +1,78 @@
+apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2
+kind: Deployment
+metadata:
+  name: ze1-deployment
+  namespace: jx
+spec:
+  selector:
+    matchLabels:
+      app: ze1
+  replicas: 2 # tells deployment to run 2 pods matching the template
+  template: # create pods using pod definition in this template
+    metadata:
+      # unlike pod-nginx.yaml, the name is not included in the meta data as a unique name is
+      # generated from the deployment name
+      labels:
+        app: ze1
+        namespace: jx
+    spec:
+      containers:
+      - name: ze1
+        image: zefiber/ze1:0.0.7
+        imagePullPolicy: "Always"
+        ports:
+        - containerPort: 8080
+        volumeMounts:
+        - name: application-config
+          mountPath: "/deployments/config"
+          readOnly: true
+        env:
+        - name: JVM_ARGUMENTS
+          value: "-Dspring.profiles.active=dev -Dspring.config.location=/deployments/config/application-qa.properties -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005"
+        - name: TEST_KEY_VALUE_PROP1
+          valueFrom:
+            configMapKeyRef:
+              name: my-config
+              key: key1
+        - name: TEST_KEY_VALUE_PROP2
+          valueFrom:
+            configMapKeyRef:
+              name: my-config
+              key: key2
+        - name: TEST_FOLDER_PROP
+          valueFrom:
+            configMapKeyRef:
+              name: try-folder-config
+              key: application-dev.properties
+      volumes:
+      - name: application-config
+        configMap:
+          name: spring-app-config
+          items:
+          - key: application.properties
+            path: application.properties
+      volumes:
+      - name: application-config
+        configMap:
+          name: try-folder-config
+          
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: ze1-service
+spec:
+  ports:
+  - port: 8080 # the port that this service should serve on
+    # the container on each pod to connect to, can be a name
+    # (e.g. 'www') or a number (e.g. 80)
+    targetPort: 8080
+    protocol: TCP
+  # just like the selector in the deployment,
+  # but this time it identifies the set of pods to load balance
+  # traffic to.
+  selector:
+    app: ze1
+  type: NodePort
+
